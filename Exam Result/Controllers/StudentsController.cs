@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using Exam_Result.DatabaseContext;
@@ -39,13 +40,25 @@ namespace Exam_Result.Controllers
 
         public JsonResult GetStudentIdNumber()
         {
-            
-            var totalStudent =db.Students.Count()+1;
-            string startKeyWord = "STU-";
+
+            //var totalStudent = db.Students.Count() + 1;
             //int length = 4;
             // var result = totalStudent.ToString().PadLeft(length, '0');
-            string studentId = startKeyWord + totalStudent;
-            return Json(studentId,JsonRequestBehavior.AllowGet);
+
+
+            var lastStudentId = (from n in db.Students
+                                 orderby n.Id descending
+                                 select n.StudentId).FirstOrDefault();
+
+            string input = "0";
+            if (lastStudentId != null)
+            {
+                input = Regex.Replace(lastStudentId, "[^0-9]+", string.Empty);
+            }
+
+            string startKeyWord = "STU-";
+            string studentId = startKeyWord + (Convert.ToInt32(input)+1);
+            return Json(studentId, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Students/Create
@@ -64,8 +77,20 @@ namespace Exam_Result.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Students.Add(student);
-                db.SaveChanges();
+                try
+                {
+                    db.Students.Add(student);
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.InnerException.InnerException.Message);
+                    return View();
+
+                    //ModelState.AddModelError("", ex.InnerException.InnerException.Message);
+                    //return View("Error",  ex.InnerException.InnerException.Message);
+                }
+
                 return RedirectToAction("Index");
             }
 
@@ -124,14 +149,27 @@ namespace Exam_Result.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Student student = db.Students.Find(id);
+
             if (student != null)
             {
-                student.isDeleted = true;
-                // db.Students.Remove(student);
-                db.Entry(student).State = EntityState.Modified;
+                StudentSubject subject = db.StudentSubjects.FirstOrDefault(c => c.StudentId == student.Id);
+                //student.isDeleted = true;
+                if (subject == null)
+                {
+                    db.Students.Remove(student);
+                    //db.Entry(student).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    
+                    ModelState.AddModelError("","Can not delete student while subject is already assigned!!");
+                    return View(student);
+                }
+               
             }
 
-            db.SaveChanges();
+            
             return RedirectToAction("Index");
         }
 

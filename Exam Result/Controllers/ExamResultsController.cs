@@ -20,9 +20,27 @@ namespace Exam_Result.Controllers
         public ActionResult Index()
         {
             var examResults = db.ExamResults.Include(e => e.StudentSubject);
+            
             return View(examResults.ToList());
+            //ViewBag.Result = result;
+            //return View();
         }
 
+        public JsonResult GetResults()
+        {
+            var examResults = db.ExamResults.Include(e => e.StudentSubject);
+            var studentSubjects = db.StudentSubjects.Include(c => c.Student).Include(c => c.Subject).ToList();
+            var list = from s in studentSubjects
+                join e in examResults on s.Id equals e.StudentSubjectId into se
+                from e in se.DefaultIfEmpty()
+                select new
+                {
+                    s.StudentId,s.Subject.SubjectName, Status = e == null ? "Absent" : e.Status
+                };
+                //select new { StudentSubjects = s, Results = e == null ? "Absent" : e.Status };
+            var result = list.ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         // GET: ExamResults/Details/5
         public ActionResult Details(int? id)
         {
@@ -78,13 +96,21 @@ namespace Exam_Result.Controllers
                     ExamResult result=new ExamResult()
                     {
                         StudentSubject = studentSubject,
-                        Status = examResult.Status
+                        Status = "Pass"
                     };
                     db.ExamResults.Add(result);
                     db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+
+                    ModelState.AddModelError("", "You have to assign subject first!!");
+                    ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
+                    ViewBag.SubjectId = db.Subjects.ToList();
+                    return View(examResult);
                 }
                 
-                return RedirectToAction("Index");
             }
 
             //ViewBag.StudentSubjectId = new SelectList(db.StudentSubjects, "Id", "Id", examResult.StudentSubjectId);

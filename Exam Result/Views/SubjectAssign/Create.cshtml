@@ -28,8 +28,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.SubjectId, "Subject", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @*@Html.DropDownListFor(model => model.SubjectId, new SelectList(Subjects, "Id", "SubjectName"), "Select Subject", htmlAttributes: new { @class = "form-control" })*@
-                @Html.DropDownList("SubjectId", new List<SelectListItem>(), "Select Subject", htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.SubjectId, new SelectList(Subjects, "Id", "SubjectName"), "Select Subject", htmlAttributes: new { @class = "form-control" })
+                @*@Html.DropDownList("SubjectId", new List<SelectListItem>(), "Select Subject", htmlAttributes: new { @class = "form-control" })*@
                 @Html.ValidationMessageFor(model => model.SubjectId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -58,30 +58,30 @@
            // Manager.LoadSubjectDDL();
             
                 debugger;
-            var studentId = $("#StudentId").val();
-            var jsonData = { StudentId: studentId };
+            //var studentId = $("#StudentId").val();
+            //var jsonData = { StudentId: studentId };
 
-                $.ajax(
-                    {
-                        url: "/SubjectAssign/GetSubjects",
-                        data: jsonData,
-                        type: "POST",
-                        success: function (response) {
-                            debugger;
-                            //event.preventDefault();
-                            $("#SubjectId").empty();
-                            var options = "<option >Select...</option>";
-                            $.each(response,
-                                function (key, subject) {
-                                    options += "<option value='" + subject.Id + "'>" + subject.SubjectName + "</option>";
-                                });
-                            $("#SubjectId").append(options);
-                        },
-                        error: function (response) {
+            //    $.ajax(
+            //        {
+            //            url: "/SubjectAssign/GetSubjects",
+            //            data: jsonData,
+            //            type: "POST",
+            //            success: function (response) {
+            //                debugger;
+            //                //event.preventDefault();
+            //                $("#SubjectId").empty();
+            //                var options = "<option >Select...</option>";
+            //                $.each(response,
+            //                    function (key, subject) {
+            //                        options += "<option value='" + subject.Id + "'>" + subject.SubjectName + "</option>";
+            //                    });
+            //                $("#SubjectId").append(options);
+            //            },
+            //            error: function (response) {
 
-                        }
+            //            }
 
-                    });
+            //        });
 
             });
        

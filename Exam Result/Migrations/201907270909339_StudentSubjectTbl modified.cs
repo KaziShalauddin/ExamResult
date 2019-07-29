@@ -17,8 +17,8 @@ namespace Exam_Result.Migrations
             AlterColumn("dbo.StudentSubjects", "SubjectId", c => c.Int(nullable: false));
             CreateIndex("dbo.StudentSubjects", "StudentId");
             CreateIndex("dbo.StudentSubjects", "SubjectId");
-            AddForeignKey("dbo.StudentSubjects", "StudentId", "dbo.Students", "Id", cascadeDelete: true);
-            AddForeignKey("dbo.StudentSubjects", "SubjectId", "dbo.Subjects", "Id", cascadeDelete: true);
+            AddForeignKey("dbo.StudentSubjects", "StudentId", "dbo.Students", "Id", cascadeDelete: false);
+            AddForeignKey("dbo.StudentSubjects", "SubjectId", "dbo.Subjects", "Id", cascadeDelete: false);
         }
         
         public override void Down()

@@ -63,7 +63,7 @@ namespace Exam_Result.Controllers
         public ActionResult Create()
         {
             ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
-            //ViewBag.SubjectId = db.Subjects.ToList();
+            ViewBag.SubjectId = db.Subjects.ToList();
             return View();
         }
 
@@ -78,8 +78,8 @@ namespace Exam_Result.Controllers
             
                 StudentSubject subject = new StudentSubject()
                 {
-                    Subject = db.Subjects.Where(s=>s.Id==SubjectId).FirstOrDefault(),
-                    Student = db.Students.Where(s=>s.Id==StudentId).FirstOrDefault()
+                    SubjectId = SubjectId,
+                    StudentId = StudentId
                 };
                 db.StudentSubjects.Add(subject);
                 //db.StudentSubjects.Add(subjectAssignVM);

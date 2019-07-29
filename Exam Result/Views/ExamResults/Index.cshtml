@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var results = ViewBag.Result;
 }
 
 <h2>Index</h2>
@@ -13,37 +14,156 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.StudentSubject.Student.StudentId)
+            @*@Html.DisplayNameFor(model => model.StudentSubject.Student.StudentId)*@
+            @Html.DisplayName("Student Id")
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.StudentSubject.Subject.SubjectName)
+            @*@Html.DisplayNameFor(model => model.StudentSubject.Subject.SubjectName)*@
+            @Html.DisplayName("Subject")
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Status)
+            @*@Html.DisplayNameFor(model => model.Status)*@
+            @Html.DisplayName("Status")
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.StudentSubject.Id)
-        </td>*@
-        <td>
-            @Html.DisplayFor(modelItem => item.StudentSubject.Student.StudentId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.StudentSubject.Subject.SubjectName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Status)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
-
+    @*@foreach (var item in Model) {*@
+    @foreach (var item in Model)
+    {
+        <tr>
+            @*<td>
+                    @Html.DisplayFor(modelItem => item.StudentSubject.Id)
+                </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentSubject.Student.StudentId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentSubject.Subject.SubjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+   
 </table>
+
+<div class="panel panel-info" style="margin-top: 8px">
+    <div class="panel-heading text-center"><span class="panelHeadText">Results</span></div>
+    <div class="panel-body">
+        <div class="table table-responsive">
+            <table id="tableElement" class="table table-bordered table-striped table-condensed" style="width: 100%"></table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    
+    @Scripts.Render("~/bundles/DataTable")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var dTable = null;
+        $(document).ready(function() {
+            Manager.GetDataForTable(0);
+        });
+        var Manager = {
+            SendJsonAsyncON: function (serviceUrl, jsonParams, successCalback, errorCallback) {
+
+                $.ajax({
+                    cache: false,
+                    async: false,
+                    type: "GET",
+                    url: serviceUrl,
+                    data: jsonParams,
+                    success: successCalback,
+                    error: errorCallback
+                });
+
+            },
+
+            GetDataForTable: function (refresh) {
+                var jsonParam = '';
+                var serviceURL = "/ExamResults/GetResults/";
+                Manager.SendJsonAsyncON(serviceURL, jsonParam, onSuccess, onFailed);
+
+                function onSuccess(jsonData) {
+                    console.log('OK');
+                    Manager.LoadDataTable(jsonData, refresh);
+                }
+
+                function onFailed(xhr, status, err) {
+                    //Message.Exception(xhr);
+                }
+            },
+            LoadDataTable: function (data, refresh) {
+                if (refresh == "0") {
+                    dTable = $('#tableElement').DataTable({
+                        dom: 'lB<"toolbar">frtip',
+                        buttons: [
+                            {
+                                extend: 'csvHtml5',
+                                exportOptions: {
+                                    columns: [0, 1]
+                                },
+                                title: 'Results'
+                            }, 'print', 'pdfHtml5'
+                        ],
+
+                        scrollY: "300px",
+                        scrollX: true,
+                        scrollCollapse: true,
+                        lengthMenu: [[5, 10, 15, 40], [5, 10, 15, 40, "All"]],
+                        columnDefs: [
+                            { visible: false, targets: [] },
+                            { className: "text-left", targets: [0, 1, 2] }
+                        ],
+                        columns: [
+                            {
+                                data: 'StudentId',
+                                name: 'StudentId',
+                                title: 'Student Id',
+                                width: 100,
+                            },
+                            {
+                                data: 'SubjectName',
+                                name: 'SubjectName',
+                                title: 'Subject Name',
+                                width: 100,
+                            }, {
+                                data: 'Status',
+                                name: 'Status',
+                                title: 'Status',
+                                width: 100,
+                            },
+
+                            //{
+                            //    name: 'Option',
+                            //    title: 'Option',
+                            //    width: 50,
+
+                            //    render: function (data, type, row) {
+                            //        var deleteBtn = '';
+                            //        var detailsBtn = '<span class="glyphicon glyphicon-info-sign spnDataTableDetails" id="detailsBtn" title="Details"></span>';
+                            //        deleteBtn = '<span class="glyphicon glyphicon-trash spnDataTableDelete" id="deleteBtn" title="Click to delete"></span>';
+                            //        return detailsBtn + '<span class="glyphicon glyphicon-edit spnDataTableEdit id="editButton" title="Edit"></span>' + deleteBtn;
+                            //    }
+
+                            //}
+
+                        ],
+                        data: data
+
+                    });
+                } else {
+                    dTable.clear().rows.add(data).draw();
+                }
+            }
+        }
+    </script>
+}
