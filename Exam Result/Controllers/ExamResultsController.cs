@@ -19,11 +19,11 @@ namespace Exam_Result.Controllers
         // GET: ExamResults
         public ActionResult Index()
         {
-            //var examResults = db.ExamResults.Include(e => e.StudentSubject);
+            var examResults = db.ExamResults.Include(e => e.Student).Include(e=>e.Subject);
             
-            //return View(examResults.ToList());
+            return View(examResults.ToList());
             //ViewBag.Result = result;
-            return View();
+            //return View();
         }
 
         public JsonResult GetResults()
@@ -76,7 +76,7 @@ namespace Exam_Result.Controllers
         public ActionResult Create()
         {
             //ViewBag.StudentSubjectId = new SelectList(db.StudentSubjects, "Id", "Id");
-            ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id");
             ViewBag.SubjectId = db.Subjects.ToList();
             var studentSubject = db.StudentSubjects.ToList();
             return View();
@@ -97,7 +97,8 @@ namespace Exam_Result.Controllers
                 {
                     ExamResult result=new ExamResult()
                     {
-                        //StudentSubject = studentSubject,
+                        StudentId = examResult.StudentId,
+                        SubjectId = examResult.SubjectId,
                         Status = "Pass"
                     };
                     db.ExamResults.Add(result);
@@ -108,7 +109,7 @@ namespace Exam_Result.Controllers
                 {
 
                     ModelState.AddModelError("", "You have to assign subject first!!");
-                    ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
+                    ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id");
                     ViewBag.SubjectId = db.Subjects.ToList();
                     return View(examResult);
                 }
@@ -116,7 +117,7 @@ namespace Exam_Result.Controllers
             }
 
             //ViewBag.StudentSubjectId = new SelectList(db.StudentSubjects, "Id", "Id", examResult.StudentSubjectId);
-            ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id");
             ViewBag.SubjectId = db.Subjects.ToList();
             return View(examResult);
         }
@@ -142,7 +143,7 @@ namespace Exam_Result.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,StudentSubjectId,Status")] ExamResult examResult)
+        public ActionResult Edit([Bind(Include = "Id,StudentId,SubjectId,Status")] ExamResult examResult)
         {
             if (ModelState.IsValid)
             {
