@@ -190,6 +190,18 @@
     <Compile Include="Migrations\201907290837391_StudentTbl isDelete removed.Designer.cs">
       <DependentUpon>201907290837391_StudentTbl isDelete removed.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907300322316_ExamResultTbl modified.cs" />
+    <Compile Include="Migrations\201907300322316_ExamResultTbl modified.Designer.cs">
+      <DependentUpon>201907300322316_ExamResultTbl modified.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907300333528_StudentTbl StudentId Modified.cs" />
+    <Compile Include="Migrations\201907300333528_StudentTbl StudentId Modified.Designer.cs">
+      <DependentUpon>201907300333528_StudentTbl StudentId Modified.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907300356001_ExamResultTbl modified again.cs" />
+    <Compile Include="Migrations\201907300356001_ExamResultTbl modified again.Designer.cs">
+      <DependentUpon>201907300356001_ExamResultTbl modified again.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ExamResult.cs" />
     <Compile Include="Models\Student.cs" />
@@ -953,6 +965,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907290837391_StudentTbl isDelete removed.resx">
       <DependentUpon>201907290837391_StudentTbl isDelete removed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907300322316_ExamResultTbl modified.resx">
+      <DependentUpon>201907300322316_ExamResultTbl modified.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907300333528_StudentTbl StudentId Modified.resx">
+      <DependentUpon>201907300333528_StudentTbl StudentId Modified.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907300356001_ExamResultTbl modified again.resx">
+      <DependentUpon>201907300356001_ExamResultTbl modified again.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

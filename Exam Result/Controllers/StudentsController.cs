@@ -48,7 +48,7 @@ namespace Exam_Result.Controllers
 
             var lastStudentId = (from n in db.Students
                                  orderby n.Id descending
-                                 select n.StudentId).FirstOrDefault();
+                                 select n.Student_Id).FirstOrDefault();
 
             string input = "0";
             if (lastStudentId != null)
@@ -73,7 +73,7 @@ namespace Exam_Result.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,StudentId,Name,Roll,Address")] Student student)
+        public ActionResult Create([Bind(Include = "Id,Student_Id,Name,Roll,Address")] Student student)
         {
             if (ModelState.IsValid)
             {
@@ -117,7 +117,7 @@ namespace Exam_Result.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,StudentId,Name,Roll,Address")] Student student)
+        public ActionResult Edit([Bind(Include = "Id,Student_Id,Name,Roll,Address")] Student student)
         {
             if (ModelState.IsValid)
             {

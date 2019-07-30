@@ -15,7 +15,7 @@ namespace Exam_Result.Models
         [Display(Name = "Student Id")]
         [StringLength(10)]
         [Index(IsUnique = true)]
-        public string StudentId { get; set; }
+        public string Student_Id { get; set; }
         public string Name { get; set; }
         public int Roll { get; set; }
         public string Address { get; set; }

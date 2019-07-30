@@ -10,15 +10,12 @@ namespace Exam_Result.Models
     {
         public int Id { get; set; }
 
-        public int StudentSubjectId { get; set; }
-        public virtual StudentSubject StudentSubject { get; set; }
-
-        //[Display(Name = "Student Id")]
-        //public int StudentId { get; set; }
-        //public virtual Student Student { get; set; }
-        //[Display(Name = "Subject")]
-        //public int SubjectId { get; set; }
-        //public virtual Subject Subject { get; set; }
+        //public int StudentSubjectId { get; set; }
+        //public virtual StudentSubject StudentSubject { get; set; }
+        public int StudentId { get; set; }
+        public virtual Student Student { get; set; }
+        public int SubjectId { get; set; }
+        public virtual Subject Subject { get; set; }
         public string Status { get; set; }
     }
 }

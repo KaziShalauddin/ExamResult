@@ -62,7 +62,7 @@ namespace Exam_Result.Controllers
         // GET: SubjectAssign/Create
         public ActionResult Create()
         {
-            ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId");
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id");
             ViewBag.SubjectId = db.Subjects.ToList();
             return View();
         }
@@ -106,7 +106,7 @@ namespace Exam_Result.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId", subjectAssignVM.StudentId);
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id", subjectAssignVM.StudentId);
             ViewBag.SubjectId = new SelectList(db.Subjects, "Id", "SubjectName", subjectAssignVM.SubjectId);
             return View(subjectAssignVM);
         }
@@ -116,7 +116,7 @@ namespace Exam_Result.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,StudentId,SubjectId")] SubjectAssignVM subjectAssignVM)
+        public ActionResult Edit([Bind(Include = "Id,Student_Id,SubjectId")] SubjectAssignVM subjectAssignVM)
         {
             if (ModelState.IsValid)
             {
@@ -128,7 +128,7 @@ namespace Exam_Result.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.StudentId = new SelectList(db.Students, "Id", "StudentId", subjectAssignVM.StudentId);
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id", subjectAssignVM.StudentId);
             ViewBag.SubjectId = new SelectList(db.Subjects, "Id", "SubjectName", subjectAssignVM.SubjectId);
             return View(subjectAssignVM);
         }
