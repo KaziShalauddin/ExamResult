@@ -19,25 +19,51 @@ namespace Exam_Result.Controllers
         // GET: ExamResults
         public ActionResult Index()
         {
-            var examResults = db.ExamResults.Include(e => e.Student).Include(e=>e.Subject);
-            
-            return View(examResults.ToList());
+            var examResults = db.ExamResults.Include(e => e.Student).Include(e => e.Subject);
+            ViewBag.StudentId = new SelectList(db.Students, "Id", "Student_Id");
+            ViewBag.SubjectId = db.Subjects.ToList();
+            //return View(examResults.ToList());
             //ViewBag.Result = result;
-            //return View();
+            return View();
         }
 
         public JsonResult GetResults()
         {
-            //var examResults = db.ExamResults.Include(e => e.StudentSubject);
-            //var studentSubjects = db.StudentSubjects.Include(c => c.Student).Include(c => c.Subject).ToList();
-            //var list = from s in studentSubjects
-            //    join e in examResults on s.Id equals e.StudentSubjectId into se
-            //    from e in se.DefaultIfEmpty()
+            var examResults = db.ExamResults.ToList();
+            var studentSubjects = db.StudentSubjects.ToList();
+            var students = db.Students.ToList();
+
+            //var list = (from st in students
+            //    join s in studentSubjects on st.Id equals s.StudentId into assignedSubjects
+            //    from a in assignedSubjects.DefaultIfEmpty()
+            //    join e in examResults on new { a.Student, a.Subject } equals new { e.Student, e.Subject } into se
+            //    from sk in se.DefaultIfEmpty()
             //    select new
             //    {
-            //        s.StudentId,s.Subject.SubjectName, Status = e == null ? "Absent" : e.Status
-            //    };
-            //    //select new { StudentSubjects = s, Results = e == null ? "Absent" : e.Status };
+            //        st.Student_Id,
+            //        Status = a == null ? "Absent" : a.Subject.SubjectName
+            //    }).ToList();
+
+            var list1 = (from st in students
+                        join s in studentSubjects on st.Id equals s.StudentId into se
+                        from t in se.DefaultIfEmpty()
+                        select new
+                        {
+                           StudentId= st.Id,
+                            st.Student_Id,
+                            SubjectName = t == null ? "No subject" : t.Subject.SubjectName
+                        }).ToList();
+
+            var list2 = (from st in list1
+                join e in examResults on new{st.StudentId, st.SubjectName } equals new {e.StudentId,e.Subject.SubjectName} into se
+                from t in se.DefaultIfEmpty()
+                select new
+                {
+                    st.Student_Id,
+                    st.SubjectName,
+                    Status = t == null ? "Absent" : t.Status
+                }).ToList();
+            //select new { StudentSubjects = s, Results = e == null ? "Absent" : e.Status };
             //var result = list.ToList();
             //return Json(result, JsonRequestBehavior.AllowGet);
             return null;
@@ -63,11 +89,11 @@ namespace Exam_Result.Controllers
             var subjects = db.StudentSubjects.Where(s => s.StudentId == StudentId).Select(s => s.Subject);
             var allSubjects = db.Subjects.Except(subjects).ToList();
             var list = (from subject in allSubjects
-                select new
-                {
-                    subject.Id,
-                    subject.SubjectName
-                }).ToList();
+                        select new
+                        {
+                            subject.Id,
+                            subject.SubjectName
+                        }).ToList();
 
             return Json(list, JsonRequestBehavior.AllowGet);
 
@@ -95,7 +121,7 @@ namespace Exam_Result.Controllers
                     s.StudentId == examResult.StudentId && s.SubjectId == examResult.SubjectId);
                 if (studentSubject != null)
                 {
-                    ExamResult result=new ExamResult()
+                    ExamResult result = new ExamResult()
                     {
                         StudentId = examResult.StudentId,
                         SubjectId = examResult.SubjectId,
@@ -113,7 +139,7 @@ namespace Exam_Result.Controllers
                     ViewBag.SubjectId = db.Subjects.ToList();
                     return View(examResult);
                 }
-                
+
             }
 
             //ViewBag.StudentSubjectId = new SelectList(db.StudentSubjects, "Id", "Id", examResult.StudentSubjectId);

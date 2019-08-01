@@ -1,75 +1,161 @@
-﻿@model IEnumerable<Exam_Result.Models.ExamResult>
+﻿@*@model IEnumerable<Exam_Result.Models.ExamResult>
+
+    @{
+        ViewBag.Title = "Index";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+        var results = ViewBag.Result;
+    }*@
+@model Exam_Result.Models.ViewModels.ExamResultVM
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Result Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var results = ViewBag.Result;
+    var Subjects = ViewBag.SubjectId;
 }
 
-<h2>Index</h2>
-
 <p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @*@Html.DisplayNameFor(model => model.StudentSubject.Student.StudentId)*@
-            @Html.DisplayName("Student Id")
-        </th>
-        <th>
-            @*@Html.DisplayNameFor(model => model.StudentSubject.Subject.SubjectName)*@
-            @Html.DisplayName("Subject")
-        </th>
-        <th>
-            @*@Html.DisplayNameFor(model => model.Status)*@
-            @Html.DisplayName("Status")
-        </th>
-        <th></th>
-    </tr>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "classname" })
 
-    @*@foreach (var item in Model) {*@
-    @foreach (var item in Model)
-    {
+    </p>
+@*<table class="table">
         <tr>
-            @*<td>
-                    @Html.DisplayFor(modelItem => item.StudentSubject.Id)
-                </td>*@
-            <td>
-                @Html.DisplayFor(modelItem => item.Student.Student_Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Subject.SubjectName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
-    }
-   
-</table>
+            <th>
 
-<div class="panel panel-info" style="margin-top: 8px">
-    <div class="panel-heading text-center"><span class="panelHeadText">Results</span></div>
-    <div class="panel-body">
-        <div class="table table-responsive">
-            <table id="tableElement" class="table table-bordered table-striped table-condensed" style="width: 100%"></table>
-        </div>
+                @Html.DisplayName("Student Id")
+            </th>
+            <th>
+
+                @Html.DisplayName("Subject")
+            </th>
+            <th>
+
+                @Html.DisplayName("Status")
+            </th>
+            <th></th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Student.Student_Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Subject.SubjectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>*@
+<div class="row" style="position: relative;">
+    <div class="col-md-12" style="margin-top: 50px;padding: 0 10px 0">
     </div>
 </div>
+<div class="row" style="position: relative;">
+    <div class="col-md-12" style="padding: 0 10px 0">
+
+        @*modal start*@
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Add Exam Result</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="resultForm">
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StudentId, "StudentId", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.DropDownList("StudentId", null, "Select Student", htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.StudentId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SubjectId, "SubjectId", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.DropDownListFor(model => model.SubjectId, new SelectList(Subjects, "Id", "SubjectName"), "Select Subject", htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.SubjectId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                @*<div class="form-group">
+                                        <label class="col-md-4 control-label">Road No : </label>
+                                        <div class="col-md-8">
+                                            <input class="form-control" id="roadNoTxt" name="RoadNo" type="text" value="" placeholder="Road Number" /><span class="required">*</span>
+                                        </div>
+                                    </div>*@
+
+                                <div class="form-group">
+                                    <div class="col-md-offset-4 col-md-8">
+                                        <div class="pull-right" style="margin-right: 18px">
+                                            <button style="margin-right: 5px; width: 70px" id="saveButton" type="button" class="btn btn-success">Save</button>
+                                            <input style="width: 70px" id="clearButton" type="reset" value="Clear" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*modal end*@
+
+    </div>
+
+    <div class="col-md-12" style="margin-top: 0px">
+        <div>
+            <button id="openModalButton" data-toggle="modal" data-target="#myModal" class="btn btn-success">Add New</button>
+        </div>
+        <div class="panel panel-info" style="margin-top: 8px">
+            <div class="panel-heading text-center"><span class="panelHeadText">Results</span></div>
+            <div class="panel-body">
+                <div class="table table-responsive">
+                    <table id="tableElement" class="table table-bordered table-striped table-condensed" style="width: 100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+@*<div class="panel panel-info" style="margin-top: 8px">
+        <div class="panel-heading text-center"><span class="panelHeadText">Results</span></div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="tableElement" class="table table-bordered table-striped table-condensed" style="width: 100%"></table>
+            </div>
+        </div>
+    </div>*@
 @section Scripts {
-    
+
     @Scripts.Render("~/bundles/DataTable")
     @Scripts.Render("~/bundles/jqueryval")
 
     <script type="text/javascript">
         var dTable = null;
-        $(document).ready(function() {
+        $(document).ready(function () {
             Manager.GetDataForTable(0);
         });
         var Manager = {
@@ -125,17 +211,18 @@
                         ],
                         columns: [
                             {
-                                data: 'StudentId',
+                                data: 'Student_Id',
                                 name: 'StudentId',
                                 title: 'Student Id',
                                 width: 100,
                             },
+                            //{
+                            //    data: 'SubjectName',
+                            //    name: 'SubjectName',
+                            //    title: 'Subject Name',
+                            //    width: 100,
+                            //},
                             {
-                                data: 'SubjectName',
-                                name: 'SubjectName',
-                                title: 'Subject Name',
-                                width: 100,
-                            }, {
                                 data: 'Status',
                                 name: 'Status',
                                 title: 'Status',
