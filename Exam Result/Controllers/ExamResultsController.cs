@@ -46,34 +46,52 @@ namespace Exam_Result.Controllers
             //        Status = a == null ? "Absent" : a.Subject.SubjectName
             //    }).ToList();
 
-            var assignedSubjectList = (from st in students
-                                       join s in studentSubjects on st.Id equals s.StudentId into se
-                                       from t in se.DefaultIfEmpty()
-                                       select new
-                                       {
-                                           StudentId = st.Id,
-                                           st.Student_Id,
-                                           SubjectName = t == null ? "No subject" : t.Subject.SubjectName
-                                       }).ToList();
+            //var assignedSubjectList = (from st in students
+            //                           join s in studentSubjects on st.Id equals s.StudentId into se
+            //                           from t in se.DefaultIfEmpty()
+            //                           select new
+            //                           {
+            //                               StudentId = st.Id,
+            //                               st.Student_Id,
+            //                               SubjectName = t == null ? "No subject" : t.Subject.SubjectName
+            //                           }).ToList();
 
-            
 
-           // var notAppeared=studentSubjects.Select(c=>c.Id).Except(examResults.Select(c=>c.StudentSubjectId)).ToList();
 
-            
-            
-            var resultList = (from st in assignedSubjectList
-                //join e in examResults on new { st.StudentId, st.SubjectName } equals new { e.StudentId, e.Subject.SubjectName } into se
-                join e in examResults.GroupBy(c=>c.StudentId) on st.StudentId equals e.Key into se
+            // var notAppeared=studentSubjects.Select(c=>c.Id).Except(examResults.Select(c=>c.StudentSubjectId)).ToList();
+
+
+
+            //var resultList = (from st in assignedSubjectList
+            //                      //join e in examResults on new { st.StudentId, st.SubjectName } equals new { e.StudentId, e.Subject.SubjectName } into se
+            //                  join e in examResults.GroupBy(c => c.StudentId) on st.StudentId equals e.Key into se
+            //                  from t in se.DefaultIfEmpty()
+            //                  select new
+            //                  {
+            //                      st.Student_Id,
+            //                      Status = t == null ? "Absent" : t.Select(c => c.Status).FirstOrDefault()
+            //                  }).ToList();
+
+
+            var examResult = (from st in studentSubjects
+                        join e in examResults on  st.Id equals e.StudentSubjectId into se
+                        from t in se.DefaultIfEmpty()
+                        select new
+                        {
+                            st.Student.Student_Id,
+                            status = t == null ? "Fail" : t.Status
+                        }).ToList();
+
+            var finalResult = (from st in students
+                join e in examResult.GroupBy(c => c.Student_Id) on st.Student_Id equals e.Key into se
                 from t in se.DefaultIfEmpty()
                 select new
                 {
                     st.Student_Id,
-                    Status = t == null ? "Absent" : t.Select(c=>c.Status).FirstOrDefault()
+                    Status = t == null ? "Absent" : t.Select(c=>c.status).FirstOrDefault()
                 }).ToList();
-            
 
-            return Json(resultList,JsonRequestBehavior.AllowGet);
+            return Json(finalResult, JsonRequestBehavior.AllowGet);
 
         }
         // GET: ExamResults/Details/5
