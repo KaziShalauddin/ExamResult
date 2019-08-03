@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Entity;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -27,7 +29,7 @@ namespace Exam_Result.Controllers
             return View();
         }
 
-        public JsonResult GetResults()
+        public ActionResult GetResults()
         {
             var examResults = db.ExamResults.ToList();
             var studentSubjects = db.StudentSubjects.ToList();
@@ -44,29 +46,34 @@ namespace Exam_Result.Controllers
             //        Status = a == null ? "Absent" : a.Subject.SubjectName
             //    }).ToList();
 
-            var list1 = (from st in students
-                        join s in studentSubjects on st.Id equals s.StudentId into se
-                        from t in se.DefaultIfEmpty()
-                        select new
-                        {
-                           StudentId= st.Id,
-                            st.Student_Id,
-                            SubjectName = t == null ? "No subject" : t.Subject.SubjectName
-                        }).ToList();
+            var assignedSubjectList = (from st in students
+                                       join s in studentSubjects on st.Id equals s.StudentId into se
+                                       from t in se.DefaultIfEmpty()
+                                       select new
+                                       {
+                                           StudentId = st.Id,
+                                           st.Student_Id,
+                                           SubjectName = t == null ? "No subject" : t.Subject.SubjectName
+                                       }).ToList();
 
-            var list2 = (from st in list1
-                join e in examResults on new{st.StudentId, st.SubjectName } equals new {e.StudentId,e.Subject.SubjectName} into se
+            
+
+           // var notAppeared=studentSubjects.Select(c=>c.Id).Except(examResults.Select(c=>c.StudentSubjectId)).ToList();
+
+            
+            
+            var resultList = (from st in assignedSubjectList
+                //join e in examResults on new { st.StudentId, st.SubjectName } equals new { e.StudentId, e.Subject.SubjectName } into se
+                join e in examResults.GroupBy(c=>c.StudentId) on st.StudentId equals e.Key into se
                 from t in se.DefaultIfEmpty()
                 select new
                 {
                     st.Student_Id,
-                    st.SubjectName,
-                    Status = t == null ? "Absent" : t.Status
+                    Status = t == null ? "Absent" : t.Select(c=>c.Status).FirstOrDefault()
                 }).ToList();
-            //select new { StudentSubjects = s, Results = e == null ? "Absent" : e.Status };
-            //var result = list.ToList();
-            //return Json(result, JsonRequestBehavior.AllowGet);
-            return null;
+            
+
+            return Json(resultList,JsonRequestBehavior.AllowGet);
 
         }
         // GET: ExamResults/Details/5
@@ -123,6 +130,7 @@ namespace Exam_Result.Controllers
                 {
                     ExamResult result = new ExamResult()
                     {
+                        StudentSubjectId = studentSubject.Id,
                         StudentId = examResult.StudentId,
                         SubjectId = examResult.SubjectId,
                         Status = "Pass"

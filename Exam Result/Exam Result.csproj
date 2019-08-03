@@ -202,6 +202,10 @@
     <Compile Include="Migrations\201907300356001_ExamResultTbl modified again.Designer.cs">
       <DependentUpon>201907300356001_ExamResultTbl modified again.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908030551369_Exam Result Table modified.cs" />
+    <Compile Include="Migrations\201908030551369_Exam Result Table modified.Designer.cs">
+      <DependentUpon>201908030551369_Exam Result Table modified.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ExamResult.cs" />
     <Compile Include="Models\Student.cs" />
@@ -974,6 +978,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907300356001_ExamResultTbl modified again.resx">
       <DependentUpon>201907300356001_ExamResultTbl modified again.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908030551369_Exam Result Table modified.resx">
+      <DependentUpon>201908030551369_Exam Result Table modified.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
