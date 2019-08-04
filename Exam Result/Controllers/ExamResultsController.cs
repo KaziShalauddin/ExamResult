@@ -57,11 +57,7 @@ namespace Exam_Result.Controllers
             //                           }).ToList();
 
 
-
-            // var notAppeared=studentSubjects.Select(c=>c.Id).Except(examResults.Select(c=>c.StudentSubjectId)).ToList();
-
-
-
+            // var absentStudents = students.Where(c => !passedStudents.Any() || !failedStudents.Any()).Select(c => new { c.Student_Id, Status = "Absent" }).ToList();
             //var resultList = (from st in assignedSubjectList
             //                      //join e in examResults on new { st.StudentId, st.SubjectName } equals new { e.StudentId, e.Subject.SubjectName } into se
             //                  join e in examResults.GroupBy(c => c.StudentId) on st.StudentId equals e.Key into se
@@ -73,26 +69,38 @@ namespace Exam_Result.Controllers
             //                  }).ToList();
 
 
-            var examResult = (from st in studentSubjects
-                        join e in examResults on  st.Id equals e.StudentSubjectId into se
-                        from t in se.DefaultIfEmpty()
-                        select new
-                        {
-                            st.Student.Student_Id,
-                            status = t == null ? "Fail" : t.Status
-                        }).ToList();
+            //var examResult = (from st in studentSubjects
+            //            join e in examResults on  st.Id equals e.StudentSubjectId into se
+            //            from t in se.DefaultIfEmpty()
+            //            select new
+            //            {
+            //                st.Student.Student_Id,
+            //                status = t == null ? "Fail" : t.Status
+            //            }).ToList();
 
+
+
+
+            var notAppeared = studentSubjects.Select(c => c.Id).Except(examResults.Select(c => c.StudentSubjectId)).ToList();
+
+            //var failedStudents = students.Where(c => notAppeared.Any(c2 => c2==c.Id)).Select(c => new { c.Student_Id, Status = "Fail" }).ToList();
+            var failedStudents = studentSubjects.Where(c => notAppeared.Any(c2 => c2 == c.Id)).Select(c => c.Student).Select(c => new { c.Student_Id, Status = "Fail" }).ToList();
+
+
+            var passedStudents = studentSubjects.Where(c => failedStudents.All(c2 => c2.Student_Id != c.Student.Student_Id)).Select(c => new { c.Student.Student_Id, Status = "Pass" }).ToList();
+
+            var joinPassFail = passedStudents.Concat(failedStudents).ToList();
             var finalResult = (from st in students
-                join e in examResult.GroupBy(c => c.Student_Id) on st.Student_Id equals e.Key into se
-                from t in se.DefaultIfEmpty()
-                select new
-                {
-                    st.Student_Id,
-                    Status = t == null ? "Absent" : t.Select(c=>c.status).FirstOrDefault()
-                }).ToList();
+                               join f in joinPassFail on st.Student_Id equals f.Student_Id into se
+                               from t in se.DefaultIfEmpty()
+                               select new
+                               {
+                                   st.Student_Id,
+                                   Status = t == null ? "Absent" : t.Status
+                               }).ToList();
 
             return Json(finalResult, JsonRequestBehavior.AllowGet);
-
+            //return null;
         }
         // GET: ExamResults/Details/5
         public ActionResult Details(int? id)
