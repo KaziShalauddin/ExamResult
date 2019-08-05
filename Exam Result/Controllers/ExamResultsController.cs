@@ -35,59 +35,13 @@ namespace Exam_Result.Controllers
             var studentSubjects = db.StudentSubjects.ToList();
             var students = db.Students.ToList();
 
-            //var list = (from st in students
-            //    join s in studentSubjects on st.Id equals s.StudentId into assignedSubjects
-            //    from a in assignedSubjects.DefaultIfEmpty()
-            //    join e in examResults on new { a.Student, a.Subject } equals new { e.Student, e.Subject } into se
-            //    from sk in se.DefaultIfEmpty()
-            //    select new
-            //    {
-            //        st.Student_Id,
-            //        Status = a == null ? "Absent" : a.Subject.SubjectName
-            //    }).ToList();
-
-            //var assignedSubjectList = (from st in students
-            //                           join s in studentSubjects on st.Id equals s.StudentId into se
-            //                           from t in se.DefaultIfEmpty()
-            //                           select new
-            //                           {
-            //                               StudentId = st.Id,
-            //                               st.Student_Id,
-            //                               SubjectName = t == null ? "No subject" : t.Subject.SubjectName
-            //                           }).ToList();
-
-
-            // var absentStudents = students.Where(c => !passedStudents.Any() || !failedStudents.Any()).Select(c => new { c.Student_Id, Status = "Absent" }).ToList();
-            //var resultList = (from st in assignedSubjectList
-            //                      //join e in examResults on new { st.StudentId, st.SubjectName } equals new { e.StudentId, e.Subject.SubjectName } into se
-            //                  join e in examResults.GroupBy(c => c.StudentId) on st.StudentId equals e.Key into se
-            //                  from t in se.DefaultIfEmpty()
-            //                  select new
-            //                  {
-            //                      st.Student_Id,
-            //                      Status = t == null ? "Absent" : t.Select(c => c.Status).FirstOrDefault()
-            //                  }).ToList();
-
-
-            //var examResult = (from st in studentSubjects
-            //            join e in examResults on  st.Id equals e.StudentSubjectId into se
-            //            from t in se.DefaultIfEmpty()
-            //            select new
-            //            {
-            //                st.Student.Student_Id,
-            //                status = t == null ? "Fail" : t.Status
-            //            }).ToList();
-
-
-
-
             var notAppeared = studentSubjects.Select(c => c.Id).Except(examResults.Select(c => c.StudentSubjectId)).ToList();
 
             //var failedStudents = students.Where(c => notAppeared.Any(c2 => c2==c.Id)).Select(c => new { c.Student_Id, Status = "Fail" }).ToList();
-            var failedStudents = studentSubjects.Where(c => notAppeared.Any(c2 => c2 == c.Id)).Select(c => c.Student).Select(c => new { c.Student_Id, Status = "Fail" }).ToList();
+            var failedStudents = studentSubjects.Where(c => notAppeared.Any(c2 => c2 == c.Id)).Select(c => c.Student).GroupBy(c=>c.Student_Id).Select(c => new { Student_Id= c.Key, Status = "Fail" }).ToList();
 
 
-            var passedStudents = studentSubjects.Where(c => failedStudents.All(c2 => c2.Student_Id != c.Student.Student_Id)).Select(c => new { c.Student.Student_Id, Status = "Pass" }).ToList();
+            var passedStudents = studentSubjects.Where(c => failedStudents.All(c2 => c2.Student_Id != c.Student.Student_Id)).GroupBy(c => c.Student.Student_Id).Select(c => new { Student_Id= c.Key, Status = "Pass" }).ToList();
 
             var joinPassFail = passedStudents.Concat(failedStudents).ToList();
             var finalResult = (from st in students
@@ -159,7 +113,7 @@ namespace Exam_Result.Controllers
                         StudentSubjectId = studentSubject.Id,
                         StudentId = examResult.StudentId,
                         SubjectId = examResult.SubjectId,
-                        Status = "Pass"
+                        //Status = "Pass"
                     };
                     db.ExamResults.Add(result);
                     db.SaveChanges();
