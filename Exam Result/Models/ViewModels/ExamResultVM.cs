@@ -18,5 +18,7 @@ namespace Exam_Result.Models.ViewModels
         public Subject Subject { get; set; }
 
         public string Status { get; set; }
+
+        public List<ExamResult> ExamResults { get; set; }
     }
 }

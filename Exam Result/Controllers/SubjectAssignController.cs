@@ -19,7 +19,7 @@ namespace Exam_Result.Controllers
         // GET: SubjectAssign
         public ActionResult Index()
         {
-            var subjectAssignVMs = db.StudentSubjects.Include(s => s.Student).Include(s => s.Subject);
+            var subjectAssignVMs = db.StudentSubjects.OrderBy(c=>c.Student.Student_Id).Include(s => s.Student).Include(s => s.Subject);
             return View(subjectAssignVMs.ToList());
         }
 
